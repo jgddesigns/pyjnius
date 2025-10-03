@@ -16,7 +16,8 @@ cdef class LocalRef:
 
     def __repr__(self):
         return '<LocalRef obj=0x{0:x} at 0x{1:x}>'.format(
-            <long><void *>self.obj, id(self))
+            <intptr_t><void *>self.obj, id(self))
+
 
 
 cdef LocalRef create_local_ref(JNIEnv *env, jobject obj):

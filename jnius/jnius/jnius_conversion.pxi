@@ -62,7 +62,7 @@ cdef void populate_args(JNIEnv *j_env, tuple definition_args, jvalue *j_args, ar
                 j_args[index].l = NULL
 
             # numeric types
-            elif isinstance(py_arg, int):
+            elif isinstance(py_arg, (int, int)):
                 j_args[index].l = convert_python_to_jobject(
                     j_env, 'Ljava/lang/Integer;', py_arg
                 )
@@ -479,7 +479,7 @@ cdef jobject convert_python_to_jobject(JNIEnv *j_env, definition, obj) except *:
             return convert_pystr_to_java(j_env, to_unicode(obj))
 
         # numeric types
-        elif isinstance(obj, int) and \
+        elif isinstance(obj, (int, int)) and \
                 definition in (
                     'Ljava/lang/Integer;',
                     'Ljava/lang/Number;',
@@ -541,6 +541,7 @@ cdef jobject convert_python_to_jobject(JNIEnv *j_env, definition, obj) except *:
         conversions = {
             int: 'I',
             bool: 'Z',
+            long: 'J',
             float: 'F',
             unicode: 'Ljava/lang/String;',
             bytes: 'B'
@@ -640,6 +641,7 @@ cdef jobject convert_pyarray_to_java(JNIEnv *j_env, definition, pyarray) except 
         conversions = {
             int: 'I',
             bool: 'Z',
+            long: 'J',
             float: 'F',
             bytes: 'B',
             str: 'Ljava/lang/String;',

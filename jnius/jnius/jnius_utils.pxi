@@ -76,7 +76,7 @@ cdef void check_exception(JNIEnv *j_env) except *:
             j_env[0].DeleteLocalRef(j_env, e_msg)
         j_env[0].DeleteLocalRef(j_env, exc)
 
-        raise JavaException('JVM exception occurred: %s' % (str(pyexcclass) + ": " + pymsg if pymsg is not None else pyexcclass), pyexcclass, pymsg, pystack)
+        raise JavaException('JVM exception occurred: %s' % (pymsg + " " + str(pyexcclass) if pymsg is not None else pyexcclass), pyexcclass, pymsg, pystack)
 
 
 cdef void _append_exception_trace_messages(
@@ -300,26 +300,27 @@ cdef int calculate_score(sign_args, args, is_varargs=False) except *:
         r = sign_args[index]
         arg = args[index]
 
-        if r == 'Z': # boolean
+        if r == 'Z':
             if not isinstance(arg, bool):
                 return -1
             score += 10
             continue
 
-        if r == 'B': # byte
+        if r == 'B':
             if not isinstance(arg, int):
                 return -1
             score += 10
             continue
 
-        if r == 'C': # char
+        if r == 'C':
             if not isinstance(arg, str) or len(arg) != 1:
                 return -1
             score += 10
             continue
 
-        if r == 'S': # short
-            if isinstance(arg, int) and arg <= 32767 and arg >= -32768:
+        if r == 'S' or r == 'I':
+            if isinstance(arg, int) or (
+                    (isinstance(arg, int) and arg < 2147483648)):
                 score += 10
                 continue
             elif isinstance(arg, float):
@@ -328,8 +329,8 @@ cdef int calculate_score(sign_args, args, is_varargs=False) except *:
             else:
                 return -1
 
-        if r == 'I': # int
-            if isinstance(arg, int) and arg <= 2147483647 and arg >= -2147483648:
+        if r == 'J':
+            if isinstance(arg, int) or isinstance(arg, int):
                 score += 10
                 continue
             elif isinstance(arg, float):
@@ -338,17 +339,7 @@ cdef int calculate_score(sign_args, args, is_varargs=False) except *:
             else:
                 return -1
 
-        if r == 'J': # long
-            if isinstance(arg, int):
-                score += 10
-                continue
-            elif isinstance(arg, float):
-                score += 5
-                continue
-            else:
-                return -1
-
-        if r == 'F' or r == 'D': # float or double
+        if r == 'F' or r == 'D':
             if isinstance(arg, int):
                 score += 5
                 continue
@@ -358,7 +349,7 @@ cdef int calculate_score(sign_args, args, is_varargs=False) except *:
             else:
                 return -1
 
-        if r[0] == 'L': # classname
+        if r[0] == 'L':
 
             r = r[1:-1]
 
@@ -477,7 +468,7 @@ cdef readable_sig(sig, is_var):
            'D': 'double',
            'F': 'float',
            'I': 'int',
-           'J': 'long',
+           'J': 'int',
            'S': 'short',
            'V': 'void',
            '[': 'array',

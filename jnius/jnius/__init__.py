@@ -1,5 +1,5 @@
 '''
-PyJNIus
+Pyjnius
 =======
 
 Accessing Java classes from Python.
@@ -7,9 +7,9 @@ Accessing Java classes from Python.
 All the documentation is available at: http://pyjnius.readthedocs.org
 '''
 
-__version__ = '1.7.0'
+__version__ = '1.6.1'
 
-from jnius_config.env import get_java_setup
+from .env import get_java_setup
 
 import os
 import sys

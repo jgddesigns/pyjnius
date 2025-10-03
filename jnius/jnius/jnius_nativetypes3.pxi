@@ -15,7 +15,7 @@ cdef python_op(int op, object a, object b):
 
 cdef class ByteArray:
     cdef LocalRef _jobject
-    cdef long _size
+    cdef int _size
     cdef unsigned char *_buf
     cdef unsigned char[:] _arr
 
@@ -33,7 +33,7 @@ cdef class ByteArray:
             self._buf = NULL
         self._jobject = None
 
-    cdef void set_buffer(self, JNIEnv *env, jobject obj, long size, jbyte *buf) except *:
+    cdef void set_buffer(self, JNIEnv *env, jobject obj, int size, jbyte *buf) except *:
         if self._buf != NULL:
             raise Exception('Cannot call set_buffer() twice.')
         self._jobject = LocalRef()
@@ -51,7 +51,7 @@ cdef class ByteArray:
         return self._size
 
     def __getitem__(self, index):
-        cdef long xx
+        cdef int xx
         if isinstance(index, slice):
             val = []
             if self._size:
